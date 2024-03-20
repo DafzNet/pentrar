@@ -1,0 +1,1 @@
+const appHorizontalPadding = 12.0;
