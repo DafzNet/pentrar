@@ -14,7 +14,6 @@ import 'package:pentrar/screens/auth/signup.dart';
 import 'package:pentrar/utils/text_styles.dart';
 import 'package:pentrar/widgets/buttons.dart';
 import 'package:pentrar/widgets/text_field.dart';
-
 import '../../widgets/loading_indicator.dart';
 
 
@@ -28,34 +27,16 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  final emailController = TextEditingController();
-  final passController = TextEditingController();
+  final emailController = TextEditingController(text: 'dafz.daniel@gmail.com');
+  final passController = TextEditingController(text: 'FRvb7Ral0IRr');
 
   ApiClient httpClient = ApiClient();
 
   
 
   bool cloading =false;
-  Future getUserProfile(token) async{
-
-    print('start');
-
-    var res = await httpClient.get(
-        'profile',
-        headers: {
-        "Authorization": 'bearer $token',
-      },
-    );
-
-    print('res');
-
-    return res;
-  }
-
 
   Future _login()async{
-
-    
     
     const String api = 'auth/login';
 
@@ -186,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           
                       DefaultButton(
                         label: 'Login',
-                        active: RegExp(r'^[a-zA-Z0-9.a-zA-Z0-9_a-zA-Z0-9!_+=-~*£]+@[a-zA-Z0-9.a-zA-Z0-9_a-zA-Z0-9-a-zA-Z0-9]+\.[a-zA-Z0-9]+').hasMatch(emailController.text) && passController.text.length >=8,
+                        // active: RegExp(r'^[a-zA-Z0-9.a-zA-Z0-9_a-zA-Z0-9!_+=-~*£]+@[a-zA-Z0-9.a-zA-Z0-9_a-zA-Z0-9-a-zA-Z0-9]+\.[a-zA-Z0-9]+').hasMatch(emailController.text) && passController.text.length >=8,
                           
                         onTap: ()async{
                           //acefarmmarket@gmail.com
@@ -200,22 +181,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           if (_data['status'] == true) {
                             print(_data['message']);
-                          } else {
+
+                            Map<String, dynamic> decodedToken = JwtDecoder.decode(_data["data"]["accessToken"]);
                             
+                            decodedToken['token']=_data["data"]["accessToken"];
+
+                            print(decodedToken);
+                            final user = User.fromJson(decodedToken);
+                            GetIt.instance.registerSingleton<User>(user);
+                            
+
+                            Navigator.push(
+                              context,
+                              PageTransition(child: AppBaseNavigation(), type: PageTransitionType.fade)  
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(_data['message']))
+                            );
+
+                            setState((){cloading = false;});
                           }
 
-                          Map<String, dynamic> decodedToken = JwtDecoder.decode(_data["data"]["accessToken"]);
-
-                          final user = User.fromJson(decodedToken);
-                          GetIt.instance.registerSingleton<User>(user);
                           
 
                           setState((){cloading = false;});
               
-                          Navigator.push(
-                            context,
-                            PageTransition(child: AppBaseNavigation(), type: PageTransitionType.fade)  
-                          );
+                          
                         },
                       ),
                                             

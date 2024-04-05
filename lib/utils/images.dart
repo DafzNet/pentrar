@@ -9,3 +9,9 @@ const String historyUnselected = 'assets/images/history_inactive.png';
 
 const String profileSelected = 'assets/images/profile_active.png';
 const String profileUnselected = 'assets/images/profile_inactive.png';
+
+
+//Others
+const String camera = 'assets/images/camera.png';
+const String world = 'assets/images/world.png';
+const String success = 'assets/images/success.png';

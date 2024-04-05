@@ -132,9 +132,9 @@ class _DefaultButtonState extends State<DefaultButton> {
       onPressed: widget.active? widget.onTap:null,
 
       style: TextButton.styleFrom(
-        backgroundColor: !widget.active ? const Color.fromARGB(255, 231, 230, 230) : widget.color ??primaryColor[600],
+        backgroundColor: !widget.active ? Color(0xff666666) : widget.color ??primaryColor[600],
         fixedSize: widget.size?? Size(MediaQuery.of(context).size.width, 50),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
 
       child:  Text(
@@ -142,7 +142,7 @@ class _DefaultButtonState extends State<DefaultButton> {
 
         style: widget.textStyle?? TextStyle(
           fontSize: 18,
-          color: !widget.active ? Color.fromARGB(174, 145, 144, 144): widget.textColor??Colors.white
+          color: !widget.active ? Color.fromARGB(173, 216, 216, 216): widget.textColor??Colors.white
         ),
       ),
 
@@ -152,9 +152,9 @@ class _DefaultButtonState extends State<DefaultButton> {
       onPressed: widget.active? widget.onTap:null,
 
       style: TextButton.styleFrom(
-        backgroundColor: !widget.active ? const Color.fromARGB(255, 231, 230, 230): widget.color ??primaryColor[600],
+        backgroundColor: !widget.active ? Color(0xff666666)  :  widget.color ??primaryColor[600],
         fixedSize: widget.size?? Size(MediaQuery.of(context).size.width, 50),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
 
       icon: Icon(

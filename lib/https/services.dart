@@ -11,7 +11,6 @@ import 'package:http_parser/http_parser.dart';
 const String baseUrl = "https://api-pentrar.vercel.app";
 
 class ApiClient{
-
   ApiClient(
 
   );
@@ -23,6 +22,7 @@ Future<dynamic> get(
   String api,
   {
     Map<String, String>? headers,
+    String? token,
     String? bUrl,
     Duration timeout = const Duration(seconds: 10),
   }
@@ -30,7 +30,13 @@ Future<dynamic> get(
   var url = Uri.parse(bUrl ?? '$baseUrl/$api');
 
   try {
-    final response = await client.get(url, headers: headers).timeout(timeout);
+    final response = await client.get(
+      url, 
+      headers: token == null? headers:{
+        "Authorization": 'Bearer $token',
+        ...?headers
+      }
+    ).timeout(timeout);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       // If the request was successful (2xx status code),
@@ -62,12 +68,23 @@ Future<dynamic> get(
 Future<dynamic> post(
   String api,
   dynamic object,
-  {Map<String, String>? headers, String? bUrl}
+  
+  {
+    Map<String, String>? headers,
+    String? token,
+    String? bUrl}
 ) async {
   var url = Uri.parse(bUrl ?? '$baseUrl/$api');
 
   try {
-    final response = await client.post(url, body: object, headers: headers);
+    final response = await client.post(
+      url, 
+      body: object, 
+      headers: token == null? headers:{
+        "Authorization": 'Bearer $token',
+        ...?headers
+      }
+    );
 
     return response.body;
   } catch (e) {

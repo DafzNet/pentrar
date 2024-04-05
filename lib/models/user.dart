@@ -16,6 +16,7 @@ class User {
   final bool isEmailVerified;
   final int iat;
   final int exp;
+  final String token;
 
   static User? _instance;
 
@@ -34,6 +35,7 @@ class User {
     required this.isEmailVerified,
     required this.iat,
     required this.exp,
+    required this.token,
   })  : firstName = fullName.split(' ')[0],
         lastName = fullName.split(' ').length > 1
             ? fullName.split(' ')[1]
@@ -53,6 +55,7 @@ class User {
     bool? isEmailVerified,
     int? iat,
     int? exp,
+    String? token,
   }) {
     _instance ??= User._(
       id: id??'',
@@ -68,6 +71,7 @@ class User {
       isEmailVerified: isEmailVerified??false,
       iat: iat??0,
       exp: exp??0,
+      token: token??''
     );
     return _instance!;
   }
@@ -88,6 +92,7 @@ class User {
     isEmailVerified: json['isEmail_verified'],
     iat: json['iat'],
     exp: json['exp'],
+    token: json['token']
   );
   return _instance!;
 }
@@ -107,6 +112,7 @@ class User {
       'isEmail_verified': isEmailVerified,
       'iat': iat,
       'exp': exp,
+      'token':token
     };
   }
 
@@ -124,6 +130,7 @@ class User {
     bool? isEmailVerified,
     int? iat,
     int? exp,
+    String? token
   }) {
     return User._(
       id: id ?? this.id,
@@ -139,6 +146,7 @@ class User {
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       iat: iat ?? this.iat,
       exp: exp ?? this.exp,
+      token: token?? this.token
     );
   }
 

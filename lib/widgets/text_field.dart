@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pentrar/utils/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,7 +23,6 @@ class SingleLineField extends StatefulWidget {
 
   final Widget? prefix;
   final IconData? suffixIcon;
-  final Map<String, dynamic> Function(String)? valdator;
   final VoidCallback? onChanged;
 
   final bool password;
@@ -32,11 +32,27 @@ class SingleLineField extends StatefulWidget {
   final String? bottomHint;
 
   final TextInputType? keyboardType;
+  final bool enabled;
+
+  
+  final Function(bool)? validated;
+  final String pattern;
+   final int minLen;
+   final int maxLen;
+  final List<TextInputFormatter>? inputFormatters;
+  final String errorMessage;
 
   const SingleLineField(
     this.hint,
     {
     Key? key,
+    
+    this.inputFormatters,
+    this.pattern = 'none',
+    this.errorMessage = 'error in input',
+    this.minLen = 1,
+    this.maxLen = 10000000000,
+    this.validated,
     this.controller,
     this.makeButton = false,
     this.password=false,
@@ -45,13 +61,13 @@ class SingleLineField extends StatefulWidget {
     this.suffixIcon,
     this.hintAsHead=true,
     this.headerText,
-    this.valdator,
     this.persistLastValidInput = false,
     this.onChanged,
     this.keyboardType,
     this.maxLines,
     this.minLines,
-    this.bottomHint
+    this.bottomHint,
+    this.enabled = true
     }) : super(key: key);
 
   @override
@@ -72,29 +88,39 @@ class _SingleLineFieldState extends State<SingleLineField> {
   double validatorHeight = 0;
   String? errMsg;
 
+  Color focusedColor = primaryColor.shade500;
+
 
   ////Get the validation status
-  void validate(String n){
-
-    if(widget.valdator != null && !widget.valdator!(n)['valid']){
-      
-      setState(() {
-        validatorHeight=20;
-        errMsg=widget.valdator!(n)['message'];
-        borderColor = Colors.redAccent;
-      });
-    }
-    else{
-      setState(() {
-        validatorHeight=0;
-        errMsg='';
-        borderColor = primaryColor;
-      });
-      if(widget.persistLastValidInput){saveLastValidInput(n);}
-    }
-  }
 
   bool showPassword = true;
+  TextInputType? _type = TextInputType.text;
+   List<TextInputFormatter>? _formatter;
+
+
+  @override
+  void initState() {
+    _type = widget.keyboardType;
+    
+
+    if (widget.inputFormatters ==  null) {
+      if (widget.pattern == 'string') {
+        _formatter = [
+          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
+        ];
+      } else if(widget.pattern == 'number') {
+        _type = TextInputType.number;
+        _formatter = [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+        ];
+      }else if(widget.pattern == 'email' || widget.pattern == 'none') {
+        _formatter = widget.inputFormatters;
+      }
+    } else {
+      _formatter = widget.inputFormatters;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,13 +181,13 @@ class _SingleLineFieldState extends State<SingleLineField> {
           
                       onFocusChange: (focus){
                         if(focus){
-                          borderColor = primaryColor.shade600;
+                          borderColor = focusedColor;
                           borderW= 2;
                           setState(() {
                             
                           });
                         }else{
-                          borderColor = primaryColor.shade200;
+                          borderColor = Colors.grey.shade400;
                           borderW=1;
                           setState(() {
                             
@@ -171,22 +197,70 @@ class _SingleLineFieldState extends State<SingleLineField> {
           
                       child: TextField(
 
-                        maxLines: widget.maxLines,
-                        minLines: widget.minLines,
+                        maxLines: widget.maxLines??1,
+                        minLines: widget.minLines??1,
                         
 
                         controller: widget.controller,
                         autocorrect: true,
-                        enabled: widget.makeButton? false:true,
+                        enabled: widget.makeButton? false:widget.enabled,
 
-                        keyboardType: widget.keyboardType,
+                        keyboardType: _type,
+                        inputFormatters: _formatter,
                     
                         onChanged:(dd){
-                          if(widget.onChanged != null){
-                            widget.onChanged!();
-                          }
                           
-                          validate(dd);
+
+                          if (widget.pattern == 'email') {
+                            final _pattern = RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$');
+                            if (!_pattern.hasMatch(dd)) {
+                              errMsg = "Invalid email address";
+                              validatorHeight = 20;
+                              focusedColor = Colors.red;
+
+                              if(widget.validated!=null) widget.validated!(false);
+                            }else{
+                              validatorHeight = 0;
+                              focusedColor = primaryColor;
+                              if(widget.validated!=null) widget.validated!(true);
+                            }
+                          } else if(widget.pattern == 'string' || widget.pattern == 'number' || widget.pattern == 'none') {
+                            if (dd.trim().length < widget.minLen) {
+                              errMsg = "minimum character length is ${widget.minLen}";
+                              validatorHeight = 20;
+                              focusedColor = Colors.red;
+
+                              if(widget.validated!=null) widget.validated!(false);
+                            }else if (dd.length > widget.maxLen) {
+                              errMsg = "maximum character length exceeded";
+                              validatorHeight = 20;
+                              focusedColor = Colors.red;
+
+                              if(widget.validated!=null) widget.validated!(false);
+                            }
+                            else{
+                              validatorHeight = 0;
+                              focusedColor = primaryColor;
+                              if(widget.validated!=null) widget.validated!(true);
+                            }
+                          } else {
+                            final _pattern = RegExp(widget.pattern);
+                            if (!_pattern.hasMatch(dd)) {
+                              errMsg = widget.errorMessage;
+                              validatorHeight = 20;
+                              focusedColor = Colors.red;
+
+                              if(widget.validated!=null) widget.validated!(false);
+                            }else{
+                              validatorHeight = 0;
+                              focusedColor = primaryColor;
+                              if(widget.validated!=null) widget.validated!(true);
+                            }
+                          }
+
+                          setState(() {
+                            
+                          });
                         },
                         onSubmitted: saveLastValidInput,
                         obscureText: widget.password? showPassword:false,

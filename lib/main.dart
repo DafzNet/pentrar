@@ -29,19 +29,19 @@ class MyApp extends StatelessWidget {
 
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
-        brightness: Brightness.light,
-      primaryColor: Colors.white,
-      primaryColorLight: Colors.black,
-      primarySwatch: primaryColor,
-      scaffoldBackgroundColor: Colors.grey[100],
+          brightness: Brightness.light,
+          primaryColor: Colors.white,
+          primaryColorLight: Colors.black,
+          primarySwatch: primaryColor,
+          scaffoldBackgroundColor: Colors.grey[100],
 
       textTheme: TextTheme(
         bodyLarge: GoogleFonts.manrope(color: Colors.black, fontSize: 16),
         bodyMedium: GoogleFonts.manrope(color: Colors.black, fontSize: 14),
         bodySmall: GoogleFonts.manrope(color: Colors.black, fontSize: 12),
-        titleLarge: GoogleFonts.manrope(color: Colors.black, fontSize: 24),
-        titleMedium: GoogleFonts.manrope(color: Colors.black, fontSize: 20),
-        titleSmall:GoogleFonts.manrope(color: Colors.black, fontSize: 16),
+        titleLarge: GoogleFonts.manrope(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w500),
+        titleMedium: GoogleFonts.manrope(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
+        titleSmall:GoogleFonts.manrope(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
       ),
 
       appBarTheme: AppBarTheme(

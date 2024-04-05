@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pentrar/screens/app/account/account.dart';
 import 'package:pentrar/screens/app/history/history.dart';
 import 'package:pentrar/screens/app/procedure/procedure.dart';
@@ -110,7 +109,7 @@ class _AppBaseNavigationState extends State<AppBaseNavigation> with WidgetsBindi
               AssetImage(procedureSelected)
             ),
       
-            label: 'Procedure'
+            label: 'Produce'
           ),
 
 
