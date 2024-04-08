@@ -1,30 +1,38 @@
-// ignore_for_file: prefer_const_constructors, unused_local_variable
+// ignore_for_file: prefer_const_constructors
 
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:pentrar/screens/auth/forgotpassword2.dart';
+import 'package:pentrar/https/services.dart';
+import 'package:pentrar/utils/colors.dart';
 import 'package:pentrar/utils/text_styles.dart';
-import 'package:pentrar/widgets/buttons.dart';
 import 'package:pentrar/widgets/loading_indicator.dart';
-import 'package:pentrar/widgets/text_field.dart';
 
-import '../../https/services.dart';
-import '../../utils/colors.dart';
+import '../../widgets/buttons.dart';
+import '../../widgets/text_field.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class ForgotPassword2Screen extends StatefulWidget {
+
+  const ForgotPassword2Screen({
+
+    super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<ForgotPassword2Screen> createState() => _ForgotPassword2ScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ForgotPassword2ScreenState extends State<ForgotPassword2Screen> {
 
 
-  final emailController = TextEditingController();
-  bool emailVal = false;
+  final otpController = TextEditingController();
+  final passController = TextEditingController();
+  final passConfirmController = TextEditingController();
+
+  bool codeVal = false;
+  bool passVal = false;
+  bool passConfirmVal = false;
+
   bool loading = false;
 
   @override
@@ -72,25 +80,61 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   
                 Center(
                   child: SingleLineField(
-                    'Email Address',
-                    controller: emailController,
-                    pattern:'email',
+                    'Enter OTP',
+                    controller: otpController,
+                    minLen: 4,
                     validated: (p){
                       setState((){
-                        emailVal = p;
+                        codeVal = p;
                       });
                     },
 
                   )
                   ),
+
+
+                  SizedBox(
+                  height: 20,
+                ),
                   
+              
+              SingleLineField(
+                    'Enter New Password',
+                    controller: passController,
+                    pattern: 'password',
+                    validated: (p){
+                      setState((){
+                        passVal = p;
+                      });
+                    },
+
+                  ),
+
+
+                   SizedBox(
+                  height: 20,
+                ),
+                  
+
+
+                  SingleLineField(
+                    'Confirm Password',
+                    controller: passConfirmController,
+                    pattern: 'password',
+                    validated: (p){
+                      setState((){
+                        passConfirmVal = p;
+                      });
+                    },
+
+                  ),
                 SizedBox(
                   height: 80,
                 ),
                 
                 DefaultButton(
                   label: 'Reset Password',
-                  active: emailVal,
+                  active: passConfirmVal && passVal && codeVal && passConfirmController.text == passController.text,
 
                   onTap: () async{
                     
@@ -101,9 +145,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ApiClient httpClient = ApiClient();
                     try {
                       var res = await httpClient.post(
-                        'auth/forgot-password',
+                        'auth/reset-password',
                         {
-                          "email": emailController.text.trim()
+                          "code": otpController.text.trim(),
+                          "new_password": passController.text
                         }
                       );
 
@@ -122,13 +167,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ))
                         );
 
-                        Navigator.pushReplacement(
-                          context,
-                          PageTransition(
-                            child: ForgotPassword2Screen(),
-                            type: PageTransitionType.rightToLeft
-                          )
-                        );
+                        Navigator.pop(context);
                       } else {
                          setState(() {
                           loading = false;
@@ -166,10 +205,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 SizedBox(
                   height: 40,
                 ),
-                ///Display error message only if there is an error in the inputted email address
-                
-                  
-                  
+                           
               ],
             ),
           ),

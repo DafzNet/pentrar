@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:pentrar/models/user.dart';
 import 'package:pentrar/utils/sizes..dart';
 import 'package:pentrar/widgets/buttons.dart';
 import 'package:pentrar/widgets/success.dart';
 
+import '../../../../https/services.dart';
 import '../../../../widgets/text_field.dart';
 
 class BusinessInformation extends StatefulWidget {
@@ -13,6 +18,48 @@ class BusinessInformation extends StatefulWidget {
 }
 
 class _BusinessInformationState extends State<BusinessInformation> {
+  User user = GetIt.instance<User>();
+  ApiClient httpClient = ApiClient();
+    
+  final bizNameController = TextEditingController();
+  final typeController = TextEditingController();
+  final regController = TextEditingController();
+  final tinController = TextEditingController();
+  final addressController = TextEditingController();
+
+  void getVerStats()async{
+    var res = await httpClient.get('farmer/${user.id}/individual-farmer', token: user.token);
+
+    Map<String, dynamic>  data = json.decode(res);
+
+    print(data);
+    if (data['data']['category_type'] == 'individual'){
+      bizNameController.text = data['data']['farm_name'];
+      typeController.text = data['data']['category_type'];
+      regController.text = 'Nill';
+      tinController.text = 'Nill';
+      addressController.text = data['data']['farm_location'];
+    }else{
+      bizNameController.text = data['data']['coy_name'];
+      typeController.text = data['data']['category_type'];
+      regController.text = 'Nill';
+      tinController.text = 'Nill';
+      addressController.text = data['data']['coy_address'];
+    }
+  }
+
+  @override
+  initState(){
+    getVerStats();
+    if (user.role.toLowerCase() == 'individual') {
+      
+    } else {
+      
+    }
+    super.initState();
+  }
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +77,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               SingleLineField(
                 '',
                 headerText: 'Business Type',
+                controller: typeController,
                 enabled: false,
                 
                 
@@ -41,6 +89,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               SingleLineField(
                 '',
                 headerText: 'Business Name',
+                controller: bizNameController,
                 enabled: false,
               ),
 
@@ -49,6 +98,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               SingleLineField(
                 '',
                 headerText: 'Registration Number',
+                controller: regController,
                 enabled: false,
                 
               ),
@@ -59,6 +109,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               SingleLineField(
                 '',
                 headerText: 'TIN Number',
+                controller:  tinController,
                 enabled: false,
               ),
 
@@ -69,6 +120,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
                 '',
                 headerText: 'Address',
                 enabled: false,
+                controller: addressController,
                 minLines: 4,
                 maxLines: 5,
               ),

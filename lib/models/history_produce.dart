@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:pentrar/models/produce.dart';
 
 class HistoryProduceModel {
-  ProduceModel? produce;
+  Product? produce;
   String fullName;
   String designation;
   String status;
@@ -22,7 +22,7 @@ class HistoryProduceModel {
 
 
   HistoryProduceModel copyWith({
-    ProduceModel? produce,
+    Product? produce,
     String? fullName,
     String? designation,
     String? status,
@@ -52,7 +52,7 @@ class HistoryProduceModel {
 
   factory HistoryProduceModel.fromMap(Map<String, dynamic> map) {
     return HistoryProduceModel(
-      produce: map['produce'] != null ? ProduceModel.fromMap(map['produce'] as Map<String,dynamic>) : null,
+      produce: map['produce'] != null ? Product.fromMap(map['produce'] as Map<String,dynamic>) : null,
       fullName: map['fullName'] as String,
       designation: map['designation'] as String,
       status: map['status'] as String,

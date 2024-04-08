@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:pentrar/https/services.dart';
 import 'package:pentrar/screens/app/account/screens/notif.dart';
 import 'package:pentrar/utils/colors.dart';
 import 'package:pentrar/utils/sizes..dart';
 import 'package:pentrar/widgets/buttons.dart';
 
+import '../../../models/user.dart';
 import 'screens/business.dart';
 import 'screens/personal.dart';
 
@@ -16,6 +21,11 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  User user = GetIt.instance<User>();
+  ApiClient httpClient = ApiClient();
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,16 +59,26 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(height: 10,),
 
               Text(
-                'Ebiondo Daniel',
+                user.fullName,
                 style:  Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
               ),
 
 
               SizedBox(height: 5,),
 
-              Text(
-                'Business Name',
-                style:  Theme.of(context).textTheme.titleSmall,
+              FutureBuilder(
+                future: httpClient.get('farmer/${user.id}/individual-farmer', token: user.token),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError || snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
+                    return Container();
+                  }
+                  print(snapshot.data);
+                  Map<String, dynamic>  data = json.decode(snapshot.data);
+                  return Text(
+                    data['data']['category_type'] == 'individual'? data['data']['farm_name'].toString():data['data']['coy_name'].toString(),
+                    style:  Theme.of(context).textTheme.titleSmall,
+                  );
+                }
               ),
 
 

@@ -88,21 +88,23 @@ Future<dynamic> post(
 
     return response.body;
   } catch (e) {
-    // Handle any other exceptions that might occur during the request.
-    // You might want to log the error or perform additional error handling.
-    rethrow; // Rethrow the exception to let the caller handle it.
+    rethrow;
   }
 }
 
 Future<dynamic> put(
   String api,
   dynamic object,
-  {Map<String, String>? headers, String? bUrl}
+  {Map<String, String>? headers, String? bUrl, String? token}
 ) async {
   var url = Uri.parse(bUrl ?? '$baseUrl/$api');
 
   try {
-    final response = await client.put(url, body: object, headers: headers);
+    final response = await client.put(url, body: object, 
+    headers: token == null? headers:{
+        "Authorization": 'Bearer $token',
+        ...?headers
+      });
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       // If the request was successful (2xx status code),
@@ -114,13 +116,11 @@ Future<dynamic> put(
       // you might want to handle it differently, e.g., show user-friendly error messages.
       throw ClientException('Client Error: ${response.statusCode}', url);
     } else {
-      // For any other status codes, throw a general exception.
+      print(response.body);
       throw Exception('Unexpected HTTP Status Code: ${response.statusCode}');
     }
   } catch (e) {
-    // Handle any other exceptions that might occur during the request.
-    // You might want to log the error or perform additional error handling.
-    rethrow; // Rethrow the exception to let the caller handle it.
+    rethrow;
   }
 }
 
@@ -131,6 +131,7 @@ Future<Map<String, dynamic>> multipartReqFromString(
     String type = 'POST',
     required String fileField,
     Map<String, String>? fields,
+    String? token,
     Map<String, String>? headers,
     required String fileContent, // Use a string for file content
   }) async {
@@ -214,6 +215,7 @@ Future<Map<String, dynamic>> multipartReq(
   String api,
   {
     String type = 'POST',
+    String? token,
     required String fileField,
     Map<String, String>? fields,
     Map<String, String>? headers,
@@ -239,6 +241,11 @@ Future<Map<String, dynamic>> multipartReq(
         req.headers[key.toString()] = value.toString();
       });
     }
+
+    if (token != null) {
+        req.headers['Authorization'] = 'Bearer $token';
+    }
+
     // Add the file to the request as a MultipartFile.
     req.files.add(
         MultipartFile

@@ -224,7 +224,46 @@ class _SingleLineFieldState extends State<SingleLineField> {
                               focusedColor = primaryColor;
                               if(widget.validated!=null) widget.validated!(true);
                             }
-                          } else if(widget.pattern == 'string' || widget.pattern == 'number' || widget.pattern == 'none') {
+                          }else if (widget.pattern == 'password') {
+                            final _upper = RegExp(r'[A-Z]');
+                        if (dd.length < 8) {
+                          errMsg = "minimum password length is 8";
+                          validatorHeight = 20;
+                          focusedColor = Colors.red;
+
+                          if(widget.validated!=null) widget.validated!(false);
+                        }else if (!_upper.hasMatch(dd)) {
+                          errMsg = "Atleast one uppercase letter required";
+                          validatorHeight = 20;
+                          focusedColor = Colors.red;
+
+                          if(widget.validated!=null) widget.validated!(false);
+                        }else if (!RegExp(r'[a-z]').hasMatch(dd)) {
+                          errMsg = "Atleast one lowercase letter required";
+                          validatorHeight = 20;
+                          focusedColor = Colors.red;
+
+                          if(widget.validated!=null) widget.validated!(false);
+                        }else if (!RegExp(r'[0-9\\\/\.!@#\$%^\&\=\*\+_\-]').hasMatch(dd)) {
+                          errMsg = "Atleast one number or a special character required";
+                          validatorHeight = 20;
+                          focusedColor = Colors.red;
+
+                          if(widget.validated!=null) widget.validated!(false);
+                        }
+                        
+                        else{
+                          validatorHeight = 0;
+                          focusedColor = primaryColor;
+                          if(widget.validated!=null) widget.validated!(true);
+                        }
+
+                        setState(() {
+                          
+                        });
+                          }
+                          
+                          else if(widget.pattern == 'string' || widget.pattern == 'number' || widget.pattern == 'none') {
                             if (dd.trim().length < widget.minLen) {
                               errMsg = "minimum character length is ${widget.minLen}";
                               validatorHeight = 20;

@@ -5,7 +5,7 @@ import 'package:pentrar/screens/app/home/screens/product_detail.dart';
 import 'package:pentrar/utils/colors.dart';
 
 class ProduceTile extends StatefulWidget {
-  final ProduceModel  produce;
+  final Product  produce;
   const ProduceTile({
     required this.produce,
     super.key});
@@ -52,11 +52,11 @@ class _ProduceTileState extends State<ProduceTile> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 7, vertical: 3),
             decoration: BoxDecoration(
-              color: widget.produce.status.toLowerCase()=='active'?primaryColor2.shade100:widget.produce.status.toLowerCase()=='pending'?Color(0xffE1E8F1):Color(0xffD4F7F3),
+              color: widget.produce.status == 'not_approved'?Color.fromARGB(255, 241, 194, 149):primaryColor2.shade100,
               borderRadius: BorderRadius.circular(12)
             ),
             child: Text(
-              widget.produce.status,
+              widget.produce.status == 'not_approved'?'Pending':'Active',
               style:  Theme.of(context).textTheme.bodyMedium!.copyWith(
                 color: widget.produce.status.toLowerCase()=='active'?primaryColor2.shade700:widget.produce.status.toLowerCase()=='pending'?Colors.grey.shade700:primaryColor2.shade800,
               

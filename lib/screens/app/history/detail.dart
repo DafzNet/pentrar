@@ -56,7 +56,7 @@ class _HistoryDetailState extends State<HistoryDetail> {
                 children: [
                   Expanded(
                     child: Text(
-                      widget.produce.produce!.description,
+                      widget.produce.produce!.name,
                       style:  Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
@@ -171,7 +171,7 @@ class _HistoryDetailState extends State<HistoryDetail> {
                           ),
                 
                           Text(
-                            widget.produce.produce!.quantity,
+                            widget.produce.produce!.quantity.toString(),
                             style:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],

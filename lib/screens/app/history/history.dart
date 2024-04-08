@@ -19,37 +19,7 @@ class History extends StatefulWidget {
 class _HistoryState extends State<History> {
 
   List<HistoryProduceModel> _produce = [
-    HistoryProduceModel(
-      produce: ProduceModel(
-        plantingDate: DateTime.now(),
-        harvestDate: DateTime.now(),
-        description: 'Eiusmod quis exercitation nostrud irure ipsum amet labore sunt et elit mollit incididunt Lorem. Consectetur esse nulla est laborum commodo commodo nulla aliqua quis aliqua. Occaecat consectetur aliqua cupidatat ad pariatur labore Lorem. Consectetur labore id aute est. Adipisicing nulla elit incididunt amet.'
-      ),
-      status: 'Pending',
-      date: DateTime.now()
-    ),
 
-
-    HistoryProduceModel(
-      produce: ProduceModel(
-        plantingDate: DateTime.now(),
-        harvestDate: DateTime.now(),
-        description: 'Eiusmod quis exercitation nostrud irure ipsum amet labore sunt et elit mollit incididunt Lorem. Consectetur esse nulla est laborum commodo commodo nulla aliqua quis aliqua. Occaecat consectetur aliqua cupidatat ad pariatur labore Lorem. Consectetur labore id aute est. Adipisicing nulla elit incididunt amet.'
-      ),
-      status: 'Successful',
-      date: DateTime.now()
-    ),
-
-
-    HistoryProduceModel(
-      produce: ProduceModel(
-        plantingDate: DateTime.now(),
-        harvestDate: DateTime.now(),
-        description: 'Eiusmod quis exercitation nostrud irure ipsum amet labore sunt et elit mollit incididunt Lorem. Consectetur esse nulla est laborum commodo commodo nulla aliqua quis aliqua. Occaecat consectetur aliqua cupidatat ad pariatur labore Lorem. Consectetur labore id aute est. Adipisicing nulla elit incididunt amet.'
-      ),
-      status: 'Failed',
-      date: DateTime.now()
-    ),
 
   ];
   String _status = 'Status';

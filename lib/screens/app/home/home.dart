@@ -30,7 +30,26 @@ class _HomeScreenState extends State<HomeScreen> {
   ApiClient httpClient = ApiClient();
 
 
-  bool _enabled = false;
+  bool _enabled = true;
+
+
+  void getVerStats()async{
+    var res = await httpClient.get('farmer/${user.id}/individual-farmer', token: user.token);
+
+    Map<String, dynamic>  data = json.decode(res);
+            
+    if (data['data']['status'] == 'pending'){
+      setState(() {
+        _enabled=false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    getVerStats();
+    super.initState();
+  }
 
 
   @override
@@ -158,20 +177,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
               SizedBox(height: 15,),
-              FutureBuilder(
-                future: httpClient.get('farmer/${user.id}/individual-farmer', token: user.token),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError || snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
-                              // print(snapshot.error);
-                    return Container();
-                  }
-                  
-
-                  Map<String, dynamic>  data = json.decode(snapshot.data);
-                  print(data);
-
-                  if (data['data']['status'] == 'pending')
-                  return Column(
+              
+              if(!_enabled)
+              Column(
                     children: [
                       Row(
                         children: [
@@ -209,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    'Complete Business Profile',
+                                    'Complete Your Profile',
                                     style:  Theme.of(context).textTheme.titleSmall,
                                   ),
                                 ],
@@ -221,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      'Ex occaecat id ullamco aliquip Lorem sit. Ex occaecat id ullamco aliquip Lorem sit.',
+                                      '',
                                       style:  Theme.of(context).textTheme.bodyMedium!,
                                     ),
                                   ),
@@ -232,54 +240,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ],
-                  );
-                  setState(() {
-                    _enabled = true;
-                  });
-                  return Container();
-                }
-              ),
-
-
-
+                  ),
 
               SizedBox(height: 15,),
 
-
-            _transactions.isEmpty?
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white
-                ),
-                child: Column(
-                  children: [
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                            'My Produces',
-                            style:  Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
-                          ),
-
-                          Icon(
-                            MdiIcons.textSearchVariant
-                          )
-                      ],
-                    ),
-
-
-
-                    Padding(
-                      padding: const EdgeInsets.all(100.0),
-                      child: Image.asset(
-                        world
-                      ),
-                    )
-                  ],
-                ),
-              ):
 
               Column(
                 children: [
@@ -306,10 +270,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: 10,),
 
 
-                  ProduceTile(
-                    produce: ProduceModel(
-                      description: 'Et dolor duis eiusmod sit pariatur irure qui laboris deserunt deserunt occaecat exercitation et nostrud.',
-                    ),
+                  FutureBuilder(
+                    future: httpClient.get('farmer/${user.id}/recentproduce', token: user.token),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError || snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
+                              // print(snapshot.error);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Text(
+                            'Loading...',
+                            style:  Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w600, fontSize: 20),
+                          ),
+                        );
+                      }
+
+                      final  jsonData = json.decode(snapshot.data);
+                      List products = jsonData['data'].map((item) => Product.fromMap(item)).toList();
+
+                      print(jsonData);
+                      
+                      return Column(
+                        children: [
+                          ...products.take(5).map((e) => ProduceTile(produce: e))
+                        ],
+                      );
+                    }
                   )
 
 

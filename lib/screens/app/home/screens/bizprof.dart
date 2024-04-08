@@ -18,9 +18,9 @@ extension BizTypeExtension on BizType {
   String get name {
     switch (this) {
       case BizType.individual:
-        return 'individual';
+        return 'Individual';
       case BizType.corperate:
-        return 'corperate';
+        return 'Corperate';
       
     }
   }
@@ -114,7 +114,7 @@ class _BusinessProfileTypeState extends State<BusinessProfileType> {
 
               onTap: (){
                 print(bizType!.name);
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   PageTransition(
                     child: BusinessInfo(

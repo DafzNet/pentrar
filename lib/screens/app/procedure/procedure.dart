@@ -1,8 +1,14 @@
 // ignore_for_file: prefer_final_fields, prefer_const_constructors
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:pentrar/https/services.dart';
+import 'package:pentrar/models/detail_produce.dart';
+import 'package:pentrar/models/user.dart';
 import 'package:pentrar/screens/app/home/components/produce_tile.dart';
 import 'package:pentrar/screens/app/home/screens/add_produce.dart';
 import 'package:pentrar/utils/sizes..dart';
@@ -19,22 +25,39 @@ class Procedure extends StatefulWidget {
 }
 
 class _ProcedureState extends State<Procedure> {
+  User user = GetIt.instance<User>();
 
-  List<ProduceModel> _produce = [
-    ProduceModel(
-      status: 'Pending'
-    ),
+  ApiClient httpClient = ApiClient();
 
-    ProduceModel(
-      status: 'Active'
-    ),
-
-    ProduceModel(
-      status: 'Submitted'
-    ),
-  ];
+  List<Produce>? _produce;
   String _status = 'Status';
   String _date = 'This month';
+
+
+  void getProduces()async{
+    var res = await httpClient.get('farmer/${user.id}/individual-farmer', token: user.token);
+
+    Map<String, dynamic>  _data = json.decode(res);
+    Map<String, dynamic>  data = Map<String, dynamic>.from(_data['data'] as Map<String,dynamic>);
+    // print(_data['data']['list_of_produce:']);
+    print(data['list_of_produce']);
+    _produce = [];
+    
+   for (var e in data['list_of_produce']) {
+     _produce!.add(Produce.fromJson(e));
+   }
+
+    setState(() {
+      
+    });
+  }
+
+  @override
+  void initState() {
+    getProduces();
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -252,14 +275,14 @@ class _ProcedureState extends State<Procedure> {
 
             SizedBox(height: 10,),
 
-            ..._produce.map(
-              (e) => Column(
-                children: [
-                  ProduceTile(produce: e),
-                  SizedBox(height: 5,)
-                ],
-              )
-            ).toList()
+            // ..._produce!.map(
+            //   (e) => Column(
+            //     children: [
+            //       ProduceTile(produce: e),
+            //       SizedBox(height: 5,)
+            //     ],
+            //   )
+            // ).toList()
         
           ],
         ),

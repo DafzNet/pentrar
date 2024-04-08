@@ -30,6 +30,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController(text: 'dafz.daniel@gmail.com');
   final passController = TextEditingController(text: 'FRvb7Ral0IRr');
 
+  bool emailVal = false;
+  bool passVal = false;
+
   ApiClient httpClient = ApiClient();
 
   
@@ -111,11 +114,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: SingleLineField(
                             '',
                             headerText: 'Email address',
+                            pattern: 'email',
                             controller: emailController,
+
               
-                            onChanged: () {
+                            validated: (p) {
                               setState(() {
-                                
+                                emailVal = p;
                               });
                             },
                           )
@@ -129,12 +134,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         password: true,
                         maxLines: 1,
                         controller: passController,
-              
-                        onChanged: () {
+
+                        pattern: 'password',
+
+                        validated: (p) {
                           setState(() {
-                            
+                            passVal = p;
                           });
                         },
+            
                       ),
                         
                       Row(
@@ -167,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           
                       DefaultButton(
                         label: 'Login',
-                        // active: RegExp(r'^[a-zA-Z0-9.a-zA-Z0-9_a-zA-Z0-9!_+=-~*£]+@[a-zA-Z0-9.a-zA-Z0-9_a-zA-Z0-9-a-zA-Z0-9]+\.[a-zA-Z0-9]+').hasMatch(emailController.text) && passController.text.length >=8,
+                        active: emailVal && passVal,
                           
                         onTap: ()async{
                           //acefarmmarket@gmail.com
@@ -215,13 +223,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         
                       TextButton(
                               onPressed: (){
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    child: SignupScreen(), 
-                                    type: PageTransitionType.rightToLeft
-                                    )
-                                  );
+                                // Navigator.push(
+                                //   context,
+                                //   PageTransition(
+                                //     child: SignupScreen(), 
+                                //     type: PageTransitionType.rightToLeft
+                                //     )
+                                //   );
                               },
                         
                               child: Text(

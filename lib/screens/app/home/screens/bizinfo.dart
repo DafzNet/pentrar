@@ -1,7 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pentrar/https/services.dart';
+import 'package:pentrar/models/user.dart';
 import 'package:pentrar/utils/colors.dart';
 import 'package:pentrar/utils/sizes..dart';
 import 'package:pentrar/widgets/buttons.dart';
@@ -24,7 +29,7 @@ class BusinessInfo extends StatefulWidget {
 }
 
 class _BusinessInfoState extends State<BusinessInfo> {
-
+  User user = GetIt.instance<User>();
 
     List<String> states = [
   'Abia',
@@ -66,16 +71,16 @@ class _BusinessInfoState extends State<BusinessInfo> {
 ];
 
 
-  final nameController = TextEditingController();
-  final addressController = TextEditingController();
-  final stateController = TextEditingController();
-  final scaleController = TextEditingController();
-  final ownershipController = TextEditingController();
+  final nameController = TextEditingController(text: '');
+  final addressController = TextEditingController(text: '');
+  final stateController = TextEditingController(text: '');
+  final scaleController = TextEditingController(text: '');
+  final ownershipController = TextEditingController(text: '');
 
 
-  final regnumberController = TextEditingController();
-  final tinController = TextEditingController();
-  final yearController = TextEditingController();
+  final regnumberController = TextEditingController(text: '');
+  final tinController = TextEditingController(text: '');
+  final yearController = TextEditingController(text: '');
 
 
   bool nameVal = false;
@@ -106,7 +111,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
             child: Column(
               children: [
                 Container(
-                  child: widget.bizType == 'individual'? Column(
+                  child: widget.bizType == 'Individual'? Column(
                     children: [
                       SizedBox(height: 15,),
                 
@@ -130,6 +135,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
                         controller: addressController,
                         minLines: 4,
                         maxLines: 5,
+                        minLen: 5,
             
                         validated: (p0) {
                           setState(() {
@@ -448,6 +454,7 @@ class _BusinessInfoState extends State<BusinessInfo> {
                         headerText: 'Address',
                         minLines: 4,
                         maxLines: 5,
+                        minLen: 5,
                 
                         validated: (p) {
                           setState(() {
@@ -632,27 +639,103 @@ class _BusinessInfoState extends State<BusinessInfo> {
                 DefaultButton(
                   label: 'Submit',
             
-                  active: widget.bizType == 'individual'?
+                  active: widget.bizType == 'Individual'?
                     nameVal && addressVal && scaleController.text.isNotEmpty &&stateController.text.isNotEmpty && ownershipController.text.isNotEmpty
                   : nameVal && addressVal && scaleController.text.isNotEmpty &&stateController.text.isNotEmpty && regVal && tinVal && yearVal,
             
-                  onTap: (){
-                    showModalBottomSheet(
-                      context: context, 
-                      builder: (context){
-                        return ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)
-                          ),
-                          
-                          child: Success(
-                            onTap: (){
-                              Navigator.pop(context);
-                            },
-                          ));
+                  onTap: ()async{
+                    setState(() {
+                      _loading = true;
+                    });
+
+                    ApiClient httpClient = ApiClient();
+
+                    try {
+                      final res = await httpClient.put(
+                      'farmer/${user.id}/update-farmer',
+                        {
+                          "category_type": widget.bizType.toLowerCase(),
+                          "coy_name": nameController.text.toLowerCase(),
+                          "reg_number": regnumberController.text,
+                          "tin_id": tinController.text,
+                          "coy_establishment": yearController.text,
+                          "coy_scale": scaleController.text.toLowerCase(),
+                          "farm_location": addressController.text,
+                          "farm_state": stateController.text.toString(),
+                          "farm_name": nameController.text,
+                          "farm_land_ownership": ownershipController.text.toLowerCase(),
+                          "farming_scale": scaleController.text.toLowerCase(),
+                          "coy_address": addressController.text,
+                          "coy_state": stateController.text.toLowerCase()
+                        },
+
+                        token: user.token
+                      );
+
+                      Map<String, dynamic> _res = json.decode(
+                        res
+                      );
+
+                      print(_res);
+
+                      if (_res['status']) {
+
+                        setState(() {
+                          _loading = false;
+                        });
+
+                        showModalBottomSheet(
+                          context: context, 
+                          builder: (context){
+                            return ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20)
+                              ),
+                              
+                              child: Success(
+                                info: _res['message'],
+                                onTap: (){
+                                  Navigator.pop(context);
+                                  Navigator.pop(context, true);
+                                },
+                              ));
+                          }
+                        );
+                      } else {
+                        setState(() {
+                          _loading = false;
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: primaryColor.shade600,
+                            content: Text(
+                            _res['message'],
+                            style: TextStyle(),
+                          ))
+                        );
                       }
-                    );
+
+                    
+                    } catch (e) {
+
+                      print(e);
+
+                      setState(() {
+                          _loading = false;
+                        });
+                      
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: primaryColor.shade600,
+                            content: Text(
+                            'Something went wrong, try again later',
+                            style: TextStyle(),
+                          ))
+                        );
+                    }
+                    
                   },
                 ),
             
